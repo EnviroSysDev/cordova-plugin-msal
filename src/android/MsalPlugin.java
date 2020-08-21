@@ -169,14 +169,18 @@ public class MsalPlugin extends CordovaPlugin {
     }
 
     private void msalInit(final JSONObject options) {
-        if (options.getString("tenendId") != null) {
-            this.tenantId = options.getString("tenendId");
-        }
-        if (options.getString("clientId") != null) {
-            this.clientId = options.getString("clientId");
-        }
-        if (options.getString("keyHash") != null) {
-            this.keyHash = options.getString("keyHash");
+        try {
+            if (options.getString("tenendId") != null) {
+                this.tenantId = options.getString("tenendId");
+            }
+            if (options.getString("clientId") != null) {
+                this.clientId = options.getString("clientId");
+            }
+            if (options.getString("keyHash") != null) {
+                this.keyHash = options.getString("keyHash");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
         cordova.getThreadPool().execute(new Runnable() {
             @Override
