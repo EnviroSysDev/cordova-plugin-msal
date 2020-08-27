@@ -170,8 +170,8 @@ public class MsalPlugin extends CordovaPlugin {
 
     private void msalInit(final JSONObject options) {
         try {
-            if (options.getString("tenendId") != null) {
-                this.tenantId = options.getString("tenendId");
+            if (options.getString("tenantId") != null) {
+                this.tenantId = options.getString("tenantId");
             }
             if (options.getString("clientId") != null) {
                 this.clientId = options.getString("clientId");
