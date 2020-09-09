@@ -170,16 +170,16 @@ public class MsalPlugin extends CordovaPlugin {
 
     private void msalInit(final JSONObject options) {
         try {
-            if (options.getString("tenantId") != null) {
+            if (options.has("tenantId")) {
                 this.tenantId = options.getString("tenantId");
             }
-            if (options.getString("clientId") != null) {
+            if (options.has("clientId")) {
                 this.clientId = options.getString("clientId");
             }
-            if (options.getString("keyHash") != null) {
+            if (options.has("keyHash")) {
                 this.keyHash = options.getString("keyHash");
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         cordova.getThreadPool().execute(new Runnable() {
@@ -522,7 +522,7 @@ public class MsalPlugin extends CordovaPlugin {
             });
         }
     }
-    
+
 
     private File createConfigFile(String data) {
         File config = new File(this.context.getFilesDir() + "auth_config.json");
