@@ -12,6 +12,10 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
+import android.util.Base64;
 import android.util.Pair;
 
 import java.io.File;
@@ -20,6 +24,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -241,11 +247,29 @@ public class MsalPlugin extends CordovaPlugin {
                     } catch (JSONException ignored) {}
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                    MsalPlugin.this.callbackContext.error(e.getMessage());
                 } catch (MsalException e) {
                     e.printStackTrace();
+                    MsalPlugin.this.callbackContext.error(e.getMessage() + "\nExpected hash: " + MsalPlugin.this.getSignatureHash(context));
                 }
             }
         });
+    }
+
+    private String getSignatureHash(Context context) {
+        try {
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_SIGNATURES);
+            Signature signature = packageInfo.signatures[0];
+            MessageDigest digest = MessageDigest.getInstance("SHA");
+            digest.update(signature.toByteArray());
+            String packageSigningSha = Base64.encodeToString(digest.digest(), Base64.NO_WRAP);
+            return packageSigningSha;
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     private void startLogger(boolean showPII, Logger.LogLevel logLevel) {
@@ -522,7 +546,7 @@ public class MsalPlugin extends CordovaPlugin {
             });
         }
     }
-
+    
 
     private File createConfigFile(String data) {
         File config = new File(this.context.getFilesDir() + "auth_config.json");
